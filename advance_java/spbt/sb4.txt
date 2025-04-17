@@ -1,0 +1,164 @@
+Spring Boot Application using @RestController
+===============================================
+Spring RestController annotation is a convenience annotation that is itself annotated with @Controller and @ResponseBody. 
+
+Spring @RestController annotation is used to create RESTful web services using Spring MVC.
+
+
+Project structure
+--------------------
+SBApp4
+|
+|----src/main/java
+|	|
+|	|----com.ihub.www
+|		|
+|		|--SBApp4Application.java
+
+|	|----com.ihub.www.controller
+		|
+		|--HomeController.java
+
+|---src/main/resources
+|	|
+|	|-----application.properties
+|
+|---src/test/java
+|	|
+|	|-----SBApp4ApplicationTests.java
+|
+| --
+| --
+| --
+
+|---pom.xml
+|
+|
+
+
+step1:
+-------
+	Create a spring starter project i.e SBApp4.
+	ex:
+		starter:
+				spring web 
+
+step2:
+------
+	create a HomeController class inside "src/main/java".
+	ex:
+	Right click to package(com.ihub.www.controller) --> new --> 
+	class --> Class: HomeController -->finish.
+
+
+step3:
+-------
+	Add @RestController annotation and "@GetMapping" annotation 
+	inside HomeController class.
+
+HomeController.java
+---------------------
+package com.ihub.www;
+
+import org.springframework.stereotype.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RestController
+public class HomeController {
+
+	@GetMapping("/msg")
+	public String home()
+	{
+		return "I Love Spring Boot concepts";
+	}
+}
+	
+
+
+step4:
+------
+	Configure tomcat server port number and jsp file.
+
+application.properties
+------------------------
+server.port=9191
+
+
+step5:
+-------
+	Run Spring Boot application.
+	ex:
+		Right click to RestApp --> run as --> spring boot application.
+
+
+step6:
+------
+	Test the application with below request url.
+	ex:
+		http://localhost:9191/
+
+
+Q)What is the difference between monolithic architecture vs microservice architecture?
+
+
+Monolithic Architecture
+-------------------------
+In Monolithic Architecture we are developing every service individually and at end of the development we are packaging all services as single war file and deploying in a server.
+
+Diagram : sb4.1
+
+Drawbacks of Monolithic Architecture
+
+1)Not suitable for Large and Complex Application	
+
+2)Slow Development
+	
+3)Blocks Continenous development
+
+4)Unscalable
+
+5)Inflexible
+
+
+Microservice architecture
+---------------------------
+The microservice architectural style is an approach to develop a single application as a suite of small services.It is next to Service-Oriented Architecture (SOA). 
+
+Each microservice runs its process and communicates with lightweight mechanisms.
+
+These services are built around business capabilities and independently developed by fully automated deployment machinery.
+
+Diagram: sb4.2
+
+Advantages of Microservice Architecture
+
+1)Independent Development
+
+2)Independent Deployment
+
+3)Fault Tolerance
+
+4)Mixed Technology Stack
+
+5)Granular Scaling
+
+
+List of companies which are working with Microservices
+====================================================
+Amazon
+NetFlix
+SoundCloud
+Twitter
+Uber
+PayPal
+ebay
+GILT
+theguardian
+NORDSTROM
+and etc.
+
+
+
+Spring boot flow layered Architecture
+=====================================
+Diagram: sb4.3

@@ -1,0 +1,495 @@
+Exception Handling in Spring Boot
+==================================
+If we give/pass wrong request to our application then we will get Exception.
+ex:
+	http://localhost:9090/fetch/102
+
+Here '102' record is not available so immediately our controller will throw below exception.
+ex:
+{
+    "timestamp": "2021-02-14T06:24:01.205+00:00",
+    "status": 500,
+    "error": "Internal Server Error",
+    "path": "/fetch/102"
+}	
+
+Handling exceptions and errors in APIs and sending the proper response to the client is good for  enterprise applications.
+
+In Spring Boot Exception handling can be performed  by using Controller Advice.
+
+@ControllerAdvice
+-------------------
+The @ControllerAdvice is an annotation is used to to handle the exceptions globally.
+ 
+@ExceptionHandler
+--------------------
+The @ExceptionHandler is an annotation used to handle the specific exceptions and sending the custom responses to the client.
+
+project structure
+------------------
+customer-service
+|
+|----src/main/java
+|	|
+	|---com.ihub.www
+		|
+		|---CustomerServiceApplication.java
+
+	|
+	|---com.ihub.www.controller
+		|
+		|---CustomerController.java
+
+	|---com.ihub.www.service
+		|
+		|---CustomerService.java
+	
+	|---com.ihub.www.repo
+		|
+		|----CustomerRepository.java(Interface)
+
+	|---com.ihub.www.model	
+		|
+		|----Customer.java
+
+	
+|	|---com.ihub.www.exception
+|		|
+|		|---ErrorDetails.java(POJO)
+|		|---ResourceNotFoundException.java 
+|		|---GlobalExceptionHandler.java
+
+|-----src/main/resources
+|		|
+		|---application.properties
+|
+|----pom.xml
+
+
+step1:
+------
+	Use the existing project i.e customer-service.
+
+step2:
+------
+	Create a com.ihub.www.exception package inside "src/main/java".
+	
+step3:
+------
+	Create ErrorDetails.java file inside "com.ihub.www.exception" pkg.
+
+ErrorDetails.java
+----------------
+package com.ihub.www.exception;
+
+import java.util.Date;
+
+public class ErrorDetails 
+{
+	private Date timestamp;
+	private String message;
+	private String details;
+	
+	
+	public ErrorDetails(Date timestamp, String message, String details) {
+		super();
+		this.timestamp = timestamp;
+		this.message = message;
+		this.details = details;
+	}
+	
+	public Date getTimestamp() {
+		return timestamp;
+	}
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
+	public String getMessage() {
+		return message;
+	}
+	public void setMessage(String message) {
+		this.message = message;
+	}
+	public String getDetails() {
+		return details;
+	}
+	public void setDetails(String details) {
+		this.details = details;
+	}
+}
+
+
+step4:
+-----
+	Create ResourceNotFoundException.java file inside "com.ihub.www.exception" pkg.
+
+ResourceNotFoundException.java
+-----------------------------
+package com.ihub.www.exception;
+
+public class ResourceNotFoundException extends RuntimeException
+{
+	public ResourceNotFoundException(String msg)
+	{
+		super(msg);
+	}
+}
+
+
+step5:
+------
+	Create a GlobalExceptionHandler.java file inside 
+	"com.ihub.www.exception" pkg.
+
+GlobalExceptionHandler.java
+---------------------------
+package com.ihub.www.exception;
+
+import java.util.Date;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+
+@ControllerAdvice
+public class GlobalExceptionHandler 
+{
+
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<?> handleResourceNotFoundException
+	(ResourceNotFoundException exception,WebRequest request )
+	{
+		ErrorDetails errorDetails=new ErrorDetails(new Date(),exception.getMessage(),request.getDescription(false));
+		return new ResponseEntity<>(errorDetails,HttpStatus.NOT_FOUND);
+	}
+	
+	//handle global exception
+		@ExceptionHandler(Exception.class)
+		public ResponseEntity<?> handleException
+		(Exception exception,WebRequest request )
+		{
+			ErrorDetails errorDetails=new ErrorDetails(new Date(),exception.getMessage(),request.getDescription(false));
+			return new ResponseEntity<>(errorDetails,HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+}
+
+step6:
+-----
+	Now add ResourceNotFoundException to CustomerService.
+
+CustomerService.java
+--------------------
+package com.ihub.www.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.ihub.www.exception.ResourceNotFoundException;
+import com.ihub.www.model.Customer;
+import com.ihub.www.repo.CustomerRepository;
+
+@Service
+public class CustomerService 
+{
+	@Autowired 
+	CustomerRepository customerRepository;
+	
+	public Customer addCustomer(Customer customer)
+	{
+		return customerRepository.save(customer);
+	}
+	public List<Customer> getAllCustomer()
+	{
+		return customerRepository.findAll();
+	}
+	
+	public Customer getCustomer(int custId)
+	{
+		return customerRepository.findById(custId)
+				.orElseThrow(()-> new ResourceNotFoundException("ID NOT FOUND"));
+		
+	}
+	
+	public Customer updateCustomer(Customer customer)
+	{
+		customer.setCustName("Lisa");
+		customer.setCustAddrs("Chicago");
+		return customerRepository.save(customer);
+	}
+	
+	public String deleteCustomer(int custId)
+	{
+		Customer customer=customerRepository.findById(custId)
+		.orElseThrow(()->new ResourceNotFoundException("Id Not Found for Delete"));
+		
+		customerRepository.delete(customer);
+
+		return "Record is deleted";
+	}
+}
+
+step7:
+----
+	Relaunch the spring boot application.
+
+step8:
+-----
+	Test the application by using below request url.
+	ex:
+		http://localhost:9090/fetch/102
+
+
+step9:
+-------
+	Here exception will display in below format.
+	ex:
+	{
+    			"timestamp": "2023-03-27T23:04:03.181+00:00",
+    			"message": "ID NOT FOUND",
+    			"details": "uri=/fetch/102"
+	}
+
+
+
+
+Eureka Server
+===============
+This server holds information about the client service applications. 
+
+Each microservice registers into Eureka server and eureka server knows all client applications running on each port and IP address. 
+
+This server is also known as discovery server.
+
+Diagram: sb6.1
+
+step1:
+------
+	Add Eureka Client dependency in "customer-service" project.
+	ex:
+		starter 
+			 Eureka Discovery client.
+
+
+
+step2:
+-----
+Create a "service-registry" project to register all microservices.
+
+Here "service-registry" is a Eureka Server and microservices are Eureka Clients.
+	
+	> service-registry
+		starter
+			> Eureka Server.
+
+
+step3:
+---------
+Add "@EnableEurekaServer" annotation in main spring boot application.
+
+ServiceRegisterApplication.java
+--------------------------------
+package com.ihub;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;
+
+@SpringBootApplication
+@EnableEurekaServer
+public class ServiceRegisterApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ServiceRegisterApplication.class, args);
+	}
+
+}
+
+step4:
+--------
+	Add port number and set register for Eureka service as false.
+
+application.yml
+----------------
+server:
+  port: 8761
+  
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+
+
+
+step5:
+--------
+	Open the "customer-service" application.yml and add 
+	register with eureka as true.
+
+application.yml
+---------------
+server:
+  port: 9001
+  
+
+spring:
+  application:
+    name: CUSTOMER-SERVICE
+    
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo
+    username: root
+    password: root
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+   
+    
+step6:
+---------
+	Now run all two projects.
+	First run service-registry then customer-service.
+	First run eureka server then eureka client.
+	
+	
+step7:
+------
+	Check the output in below url's.
+	ex:
+	http://localhost:8761/
+	
+
+
+
+Spring Cloud API Gateway
+==========================
+Spring Cloud Gateway aims to provide a simple, effective way to 
+route to API's and provide cross cutting concerns to them such as 
+security,monitoring/metrics , authentication, autherization ,adaptor and etc.
+
+
+Diagram: sb6.2
+
+step1:
+-------
+	Create a "cloud-apigateway" project in STS.
+	starters:
+		eureka Discovery client
+		Spring boot actuators
+		spring reactive web
+
+step2:
+--------
+	Add spring cloud dependency in pom.xml file.
+	ex:
+		
+	<dependency>
+    		<groupId>org.springframework.cloud</groupId>
+    		<artifactId>spring-cloud-starter-gateway</artifactId>
+    		<version>3.1.1</version>
+	</dependency>
+
+
+step3:
+-------
+	Add "@EnableEurekaClient" annotation on main spring boot application.
+
+CloudApigatewayApplication.java
+--------------------------------
+package com.ge;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+
+@SpringBootApplication
+@EnableEurekaClient
+public class CloudApigatewayApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(CloudApigatewayApplication.class, args);
+	}
+
+}
+
+
+step4:
+--------
+	Register port number, set application name,and configure 
+	all microservices for routing in application.yml file.
+
+application.yml
+-------------------
+server:
+  port: 7171
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  instance:
+    hostname: localhost
+  
+spring:
+  application:
+    name: API-GATEWAY   
+  cloud:
+    gateway:
+      routes:
+        - id: CUSTOMER-SERVICE
+          uri: lb://CUSTOMER-SERVICE
+          predicates: 
+            - Path=/customer/**
+
+
+step5:
+--------
+	Now Run the following applications sequentially.
+	"service-registry"
+	"customer-service"
+	"cloud-apigateway".
+
+
+step6:
+-------
+	Test the applications by using below urls.
+	ex:
+		http://localhost:9191/customer/fetch/101
+		http://localhost:9191/customer/fetch
+		
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

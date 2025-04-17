@@ -1,0 +1,187 @@
+Indexes
+=========
+Index is an object which is used to improve the performance of select statement.
+
+Index in a database is same as index in a book.
+
+We can create index only to those columns which are widely used in where clause.
+
+Whenever we create index , two columns will be created one is ROWID and another is index column . All the records will store in ascending order in a index column.
+ex:
+			INDEX TABLE
+	-------------------------------------
+	ROWID		|	INDEX COLUMN
+	-------------------------------------	
+			|	9000
+			|	18000
+			|	19000
+			|	29000
+			|	30000
+			|	49000
+	--------------------------------------
+
+Indexes are divided into two types.
+
+1)Simple index 
+-----------------
+If index is created only for one column is called simple index.
+
+syntax:
+	create index  <index_name> ON <object_name>(col_name);
+ex:
+	create index idx1 ON emp(esal);
+
+	select * from emp where eid=201;
+
+	select * from emp where esal=19000;
+ 
+	Here index is used when we use esal in where clause.
+	
+
+
+2)Complex index 
+----------------
+If index is created for multiple columns is called complex index.
+
+syntax:
+	create index <index_name> on <object_name>(col1,col2,..,colN);
+
+ex:
+	create index idx2 on emp(eid,ename);
+
+	Here index is used when we use eid and ename in where clause.
+
+	select * from emp where eid=201 and ename='Alan';	
+
+Indexes are categories into two types.
+
+1) Non-Unique index
+-------------------
+If a index contains duplicate values is called non-unique index.
+
+By default every index is a non-unique index.
+
+ex:
+	create index idx3 on emp(deptno);
+
+	select * from emp where deptno=10;	
+
+2) Unique index 
+---------------
+If a index contains unique values is called unique index.
+ex:
+	create unique index idx4 on emp(eid);
+
+	select * from emp where eid=204;
+
+
+Q)Write a query to see the list of indexes present in database?
+
+	select index_name from user_indexes;
+
+Q)Write a query to drop index ?
+
+	drop index idx1;
+	drop index idx2;
+	drop index idx3;
+	drop index idx4;
+
+Joins
+======
+	select * from emp; // 6 records 
+
+	select * from dept; // 4 records 
+
+	select * from emp,dept; // 6 * 4 = 24 records 
+
+	select eid,ename,esal,dname,dloc from emp,dept; // 6 * 4 =24 records 
+
+	select eid,ename,esal,deptno,dname,dloc from emp,dept;
+						//column ambiguously defined
+
+	To overcome this above limitation we need to use table_name.column_name.
+	ex:
+	select emp.eid,emp.ename,emp.esal,dept.deptno,dept.dname,dept.dloc 
+			from emp ,dept ;//24 records 
+
+Table alias
+============
+A userdefined name given to a table is called table alias.
+		
+Using table alias length of the query will reduce mean while performance will be maintained.
+
+ex:
+	select e.eid,e.ename,e.esal,d.deptno,d.dname,d.dloc 
+			from emp e,dept d; //24 records 
+			
+
+Definition
+----------
+Join is used to retrieve the data from one or more then one table.
+
+We have following types of joins.
+
+1) Equi-Join 
+
+2) Non-Equi Join
+
+3) Self Join
+
+4) Cartisian product 
+
+5) Inner join
+
+6) Outer join 
+
+
+1) Equi-Join 
+---------------
+When two tables are joined based on common column is called equi-join.
+
+ex:
+	select e.eid,e.ename,e.esal,d.dname,d.dloc from emp e, dept d
+	where(e.deptno=d.deptno); // 6 
+
+2) Non-Equi Join
+------------------
+It is used to retrive the data based on non-equi join condition.
+
+ex:
+	select e.eid,e.ename,e.esal,d.dname,d.dloc from emp e, dept d
+	where e.esal<35000; // 5 * 4 = 20 records 	
+
+3) Self Join
+--------------
+When table is joined to itself is called self join.
+
+In self join we need to create two table alias for same table.
+
+ex:
+	select e1.eid,e1.ename,e1.esal,e2.job,e2.comm from emp e1,emp e2
+	where(e1.deptno=e2.deptno); // 6 + 6 = 12 records 
+
+4) Cartisian product 
+--------------------
+It will return all possible combinations.
+ex:
+	select e.eid,e.ename,e.esal,d.dname,d.dloc from emp e, dept d;//6*4=24 rec
+
+
+
+
+
+
+
+			
+
+
+
+
+
+
+
+
+
+
+
+

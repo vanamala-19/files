@@ -1,0 +1,342 @@
+Foreign key 
+============
+It is used to establish the relationship between two tables.
+
+To establish the relationship a parent table must have primary key or unique key and child table must have foreign key.
+
+A foreign key will accept only those values which are present in primary key column.
+
+Foreign key values can be duplicated and it can be null.
+
+Foreign key name may or may not match with primary key column name but datatype must match.
+
+Diagram: oracle6.1
+
+college table
+----------------
+create table college(sno number(3) primary key, 
+			sname varchar2(10),
+				sadd varchar2(12));
+
+insert into college values(101,'raja','hyd');
+insert into college values(102,'ravi','delhi');
+insert into college values(103,'ramana','vizag');
+commit;
+
+library table
+--------------
+create table library(roll_no number(3) REFERENCES college(sno),
+				book_name varchar2(10));
+
+insert into library values(101,'Java');
+
+insert into library values(102,'Oracle');
+
+insert into library values(103,'React');
+
+insert into library values(103,'Spring');
+
+insert into library values(null,'HTML');
+
+insert into library values(104,'Testing'); //invalid 
+
+commit;
+
+
+In order to drop the tables , first we need to drop child table then parent table.
+ex:
+	drop table library;
+	drop table college;
+
+5) check 
+============
+It is used to check domain of a column.
+
+Here domain means what type of values a column must accept.
+
+Check constraint can be created at column level and table level.
+
+column level
+-------------
+drop table student;
+
+create table student(sno number(3),
+			sname varchar2(10),
+				smarks number(3) check(smarks<=100));
+
+insert into student values(101,'raja',39);
+
+insert into student values(102,'ravi',104); //invalid 
+
+insert into student values(103,'ramana',200);//invalid 
+
+commit;
+
+ex:
+---
+drop table student;
+
+create table student(sno number(3),
+			sname varchar2(10),
+				smarks number(3) check(smarks between 0 and 100));
+
+insert into student values(101,'raja',39);
+
+insert into student values(102,'ravi',104); //invalid 
+
+insert into student values(103,'ramana',200);//invalid 
+
+commit;
+
+ex:
+-----
+drop table student;
+
+create table student(sno number(3),
+			sname varchar2(10) check(sname=upper(sname)),
+				smarks number(3));
+
+insert into student values(101,'RAJA',39);
+
+insert into student values(102,'ravi',104);  //invalid 
+
+insert into student values(103,'RaMaNa',200); //invalid 
+
+commit;
+
+
+ex:
+-----
+drop table student;
+
+create table student(sno number(3),
+			sname varchar2(10) check(sname=lower(sname)),
+				smarks number(3));
+
+insert into student values(101,'RAJA',39); //invalid 
+
+insert into student values(102,'ravi',104);  
+
+insert into student values(103,'RaMaNa',200); //invalid 
+
+commit;
+
+table level
+-----------
+ex:
+-----
+drop table student;
+
+create table student(sno number(3),
+			sname varchar2(10) ,
+				smarks number(3), check(sname=lower(sname)));
+
+insert into student values(101,'RAJA',39); //invalid 
+
+insert into student values(102,'ravi',104);  
+
+insert into student values(103,'RaMaNa',200); //invalid 
+
+commit;
+
+
+Q)Write a query to add the constraint to a existing table?
+
+
+	alter table emp ADD primary key(eid);
+
+
+Q)Write a query to drop the constraint from existing table?
+
+	alter table emp DROP primary key;
+
+Q)What is the difference between ROWNUM vs ROWID ?
+
+ROWNUM					
+---------				
+ROWNUM values always starts with 1 and increment by 1.
+
+ROWNUM values are temperory. 
+
+Once the query is executed we will loss the rownum values.
+
+ex:
+	select eid,ename,esal from emp;
+
+	select rownum,eid,ename,esal from emp;	
+
+ROWID
+------
+ROWID is an address where our records will store in a database table.
+
+ROWID's are permanent.
+
+ex:
+	select rownum,eid,ename,esal from emp;
+
+	select rowid,rownum,eid,ename,esal from emp;	
+
+Interview Questions
+--------------------
+Q) Write a query to display first three records from employee table?
+
+	select * from emp where rownum<=3;
+
+
+Q) Write a query to display 4th record from employee table?
+
+	select * from emp where rownum<=4
+	minus
+	select * from emp where rownum<=3;
+
+
+Q) Write a query to display 6th record from employee table?
+
+	select * from emp where rownum<=6
+	minus
+	select * from emp where rownum<=5;
+
+
+TCL commands
+=============
+1) commit
+----------
+	It is used to makes the changes permanent to database.
+	ex:
+	drop table student;
+	
+	create table student(sno number(3),sname varchar2(10),sadd varchar2(12));
+	
+	insert into student values(101,'raja','hyd');
+
+	insert into student values(102,'ravi','delhi');
+	
+	commit;
+
+2) rollback
+--------------
+It is used to undo the changes which are not permanent.
+ex:
+	drop table student;
+	
+	create table student(sno number(3),sname varchar2(10),sadd varchar2(12));
+	
+	insert into student values(101,'raja','hyd');
+
+	insert into student values(102,'ravi','delhi');
+	
+	commit;
+
+	insert into student values(103,'ramana','vizag');
+
+	insert into student values(104,'rakesh','pune');
+
+	select * from student; // 4 records 
+
+	rollback;
+
+	select * from student; // 2 records 
+
+	
+
+3) savepoint 
+------------
+It is used to make logical marking in a database.
+
+Instead of complete rollback we can rollback upto savepoint.
+
+ex:
+	drop table student;
+	
+	create table student(sno number(3),sname varchar2(10),sadd varchar2(12));
+	
+	insert into student values(101,'raja','hyd');
+
+	insert into student values(102,'ravi','delhi');
+
+	savepoint sp1;	
+
+	insert into student values(103,'john','USA');
+
+	insert into student values(104,'hendry','UK');
+
+	savepoint sp2;
+
+	insert into student values(105,'Jerry','Japan');
+
+	insert into student values(106,'Chan','China');
+
+	select * from student; // 6 records 
+
+	rollback to sp2;
+
+	select * from student; // 4 records 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

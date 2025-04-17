@@ -1,0 +1,317 @@
+Web Application
+================
+Web application is a collection of web resource programs having the capability to generate web pages.
+
+We have two types of web pages.
+
+1)Static web page
+------------------
+A web page with fixed content is called static web page.
+ex:
+	home page
+	aboutus page
+	services page
+	contactus page 
+	and etc.
+
+2)Dynamic web page
+-------------------
+A web page with no fixed content is called dynamic web page.
+ex:
+	live cricket score page
+	stock market share value page 
+	gmail inbox 
+	and etc.
+
+We have two type of web resource programs.
+
+1)Static web resource program
+-----------------------------
+A web resource program which is used to generate static web pages is called static web resource program.
+ex:
+	HTML program
+	CSS program
+	Bootstrap program
+	AngularJS program
+	and etc.	 
+
+2)Dynamic web resource program 
+------------------------------
+A web resource program which is used to generate dynamic web pages is called dynamic web resource program.
+ex:
+	Servlet program
+	JSP program
+	and etc.
+
+Based on the position and execution these web resource programs are divided into two types.
+
+1)Client Side web resource program
+---------------------------------
+A web resource program which executes at client side(browser window) is called client side web resource program.
+ex:
+	html program	
+	css program
+	bootstrap program
+	angularjs program
+	and etc.
+
+All static web resource programs comes under client side web resource program.
+
+
+2)Server Side web resource program 
+----------------------------------
+A web resource program which executes at server side is called server side web resource program.
+ex:
+	Servlet program
+	jsp program
+	and etc.
+
+All dynamic web resource programs comes under server side web resource program.
+
+
+Web Application and Web Resource program execution
+====================================================
+Java program will execute manually.
+
+Web application and web resource program will execute when they have requested.Hence there is no way to execute them manually.
+
+Diagram: servlet1.1
+
+With respect to the diagram:
+
+> Enduser will give the request to web resource program.
+
+> Web server will trap the request and it will pass to appropriate web resource   program.
+
+> A web resource program will execute the logic to process the request.
+
+> A web resource program will communicate with database software if neccessary.
+
+> A web resource program gives the result to web server.
+
+> Web server will send the output to browser window as dynamic response.
+
+
+Deployment and Undeployment
+============================
+The process of keeping the application in the server is called deployment and reverse is called undeployment.
+
+
+Web server 
+==========
+Web server is a piece of software which is used to automate whole process of web application and web resource program execution.
+ex:
+	Resin , Tomcat and etc.
+
+
+Responsibilities of web server
+--------------------------------
+1) It takes continues request from client.
+
+2) It passes the request to appropriate web resource program.
+
+3) It provides environment to deploy and undeploy the web application.
+
+4) It will add middleware services only to deployed web applications.
+
+5) It provides environment to execute client side web resource programs at browser    window.
+
+6) It will send the response to browser window as dynamic response.
+
+7) It automates whole process of web application and web resource program execution.
+
+
+
+Web container
+=================
+It is a software application or a program which manage whole life cycle of web resource program i.e birth to death.
+
+To execute java program we required JRE/JVM.
+
+To execute applets we required applet viewer or applet container.
+
+To execute Servlet program we required servlet container.
+
+Similarly to execute JSP program we required jsp container.
+
+Servlet container manage whole life cycle of servlet program.
+
+JSP container manage whole life cycle of jsp program. 
+
+Some part of industry consider servlet container and jsp container  are  web containers.
+
+Every server is designed to support servlet container and jsp container.
+
+Tomcat 
+========
+Server			:	Web Server 
+
+Type			:	Java Server 
+
+Version			:	Tomcat 7.x 
+
+Creator			:	James Duncan Davidson
+
+Port no			:	8080
+
+Vendor			:	www.tomcat.apache.org 
+
+Servlet container	:	Catalina 
+
+Jsp container		:	Jasper 
+
+Open source		:	Open source 
+
+Download link		:	
+
+https://drive.google.com/file/d/0B9rC21sL6v0tZFdVcmxZUDA0Tms/view?usp=drive_link&resourcekey=0-VXlB_IpeWqDWwdbr1baCyA
+
+
+Tomcat install will ask following things.
+
+1) Http Connector Port No 
+
+2) Adminstrator username and password
+
+3) JRE location (parallel to JDK)
+
+4) Tomcat Installation location 
+
+Tomcat is a not a container.It is a server containing servlet container and jsp container.
+
+Before 6.x version tomcat is known as web server.From 6.x version onwards tomcat is also known as application server.
+
+Installation of tomcat server
+------------------------------
+Right click to tomcat software --> yes ---> Next --> I Agree --> select Full -->
+---> Next ---> 
+
+Http connector port : 2525
+
+adminstrative username : admin
+	      password : admin   
+
+--> next --> Next --> Install. 
+
+
+Keeping Tomcat server from automatic mode to manual mode
+========================================================
+services (view local services) --> select Apache Tomcat --> click to stop link -->
+double click to Apache tomcat --> startup type: manual -->Apply -->ok.
+
+
+
+
+Q) What is Servlet ?
+
+Servlet is a dynamic web resource program which enhance the functionality of web server or application server.
+
+or 
+
+Servlet is a java based dynamic web resource program which is used to generate dynamic web pages.
+
+or
+
+Servlet is a single instance multithread java based dynamic web resource program which is used to develop web applications.
+
+Diagram: servlet1.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

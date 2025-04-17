@@ -1,0 +1,130 @@
+Logical Operators
+===================
+If we want to write more then one condition then we need to use logical operators.
+
+We have three logical operators.
+
+1) AND 
+
+2) OR 
+
+3) NOT
+
+1) AND 
+---------
+It will return the records only if both the conditions are true.
+
+Here conditions must be from same row.
+
+ex:
+	select * from student where sno=101 AND sname='raja';
+
+	select * from student where sno=101 AND sname='ravi'; // no rows selected
+
+2) OR 
+-----
+It will return the records if any condition is true.
+
+Here conditions can be from any row.
+
+ex:
+	select * from student where sno=101 OR sname='raja';
+
+	select * from student where sno=101 OR sname='ravi';
+
+3) NOT
+--------
+It is used to return the records except the condition.
+
+A '<>' symbol denoted as not operator.
+
+
+ex:
+	select * from student where NOT sno=101;
+	
+	select * from student where sno<>101;
+
+	select * from student where NOT sname='raja';
+
+	select * from student where  sname<>'raja';	
+	
+IN operator
+=============
+It is a replacement of OR operator.
+
+It will return the records those who are matching in the list of values.
+
+ex:
+	select * from student where sno IN(101,102,103,108);
+
+	select * from student where sname IN ('raja','ravi','rakesh');
+
+
+Between operator
+===================
+It is used to return the records those who are in the range of values.
+
+Between operator uses AND operator.
+
+In between operator we will declare first lower limit then higher limit.
+
+ex:
+	select * from student where sno between 101 AND 105;
+	
+	select * from emp where deptno between 10 AND 30;
+
+
+Interview Queries
+-----------------
+Q) Write a query to display employee information whose employee id is 204 and working as a HR?
+
+ 	select * from emp where eid=204 and job='HR';
+
+
+Q)Write a query to display employees information those who are working in 10 ,20 and 30 department?
+
+ 	select * from emp where deptno IN(10,20,30);
+
+
+Q)Write a query to display employees information whose salary greater then 35000 and less then 50000?
+
+	select * from emp where esal between 35000 and 50000;
+	
+	select * from emp where esal>=35000 and esal<=50000; 
+
+
+Q)Write a query to display employees information those who are not working in 10 department?
+
+	select * from emp where NOT deptno=10; 
+
+	select * from emp where deptno<>10; 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

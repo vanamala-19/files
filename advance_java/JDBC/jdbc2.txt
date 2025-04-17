@@ -1,0 +1,417 @@
+Q)Types of jdbc drivers?
+
+We have four types of JDBC drivers.
+
+1)Type1 JDBC driver / JDBC-ODBC bridge driver
+
+2)Type2 JDBC driver / Native API driver 
+
+3)Type3 JDBC driver / Net protocol 
+
+4)Type4 JDBC driver / Native protocol 
+
+To use any JDBC driver we need to register with DriverManager service.
+
+Every JDBC application contains one built-in service called DriverManager service.
+
+Class.forName()
+=================
+It is always recommanded to use Class.forName() method to register JDBC driver with DriverManager service.
+
+It is used to load the driver class but it won't create an object.
+
+ex:
+	Class.forName("driver-class-name");
+
+
+Connection object
+===================
+It is an object of underlying supplied java class which implements java.sql.Connection interface.
+
+To perform any persistence operations we need to establish the connection with database software.
+
+Once the work with database software is completed we need to close the connection with database software.
+
+ex:
+	Connection con;
+
+DriverManager.getConnection()
+============================
+DriverManager is a class which is present in java.sql package.
+
+A getConnection() static method returns one Connection object representing connectivity between java application and database software.
+
+ex:
+	Connection con=DriverManager.getConnection("driver-url");
+
+
+Statement object
+==================
+It acts like a bridge between java application and database software.
+
+It is used to send and execute SQL query in database software.
+
+We can create Statement object as follow.
+ex:
+	Statement st=con.createStatement();
+
+
+ResultSet object
+==================
+Every ResultSet object contains two positions.
+
+1) BFR (Before First Record/Row)
+
+2) ALR (After Last Record/Row)
+
+But record pointer points to BFR position.
+
+
+Every record ResultSet contains 1 as base index and every column index of record ResultSet contains 1 as base index.
+
+rs.next()
+-----------
+It is used to move the record pointer to next position from current position.
+If next position is a record then it will return true.If next position is ALR then it will return false.
+
+To read the values from record ResultSet we need to use getXxx() methods with index number of column name.
+
+Diagram: jdbc2.1
+
+
+Q) Types of Queries in JDBC?
+
+According to JDBC point of view we have two types of queries.
+
+1)Select query 
+
+2)Non-select query 
+
+
+1)Select query 
+----------------
+Select query will give bunch of records from database software.
+ex:
+	select * from student;
+
+To execute select query JDBC Statement object gave executeQuery() method.
+ex:
+	ResultSet rs=st.executeQuery("select * from student");
+
+2)Non-select query 
+--------------------
+Non-select query will give numeric value representing number of records effected in a database table.
+ex:
+	delete from student;
+
+To execute non-select query JDBC Statement object gave executeUpdate() method.
+ex:
+	int result=st.executeUpdate("delete from student");
+
+
+Steps to develop JDBC Application
+===================================
+There are six steps to develop JDBC application.
+
+1)Register JDBC driver with DriverManager service.
+
+2)Establish the Connection with database software.
+
+3)Create Statement object.
+
+4)Sends and Executes SQL query in database software.
+
+5)Gather the result from database software to process the result.
+
+6)Close all JDBC Connection objects. 
+
+
+Type4 JDBC Driver / Native Protocol (Java Driver)
+====================================================
+
+Driver Class Name	:	oracle.jdbc.driver.OracleDriver  
+				------------------ ------------
+					pkg name 	driver class name 
+
+
+Driver URL		:       jdbc:oracle:thin:@localhost:1521:XE
+			        -----------------  |         |    |
+				sub protocol  hostname  portno logical DB name.
+
+
+Database Username	:	system
+
+
+Database Password	:	admin 
+
+
+Eclipse
+===========
+IDE		:	JEE IDE 
+
+Environment	:	Java 
+
+Flavours	:	Kepler, Indigo, Mars, Luna and etc.
+
+Vendor		:	Eclipse Foundation 
+
+website		:	www.eclipse.org 
+
+format		:	zip file 
+
+Download	:       
+
+https://www.eclipse.org/downloads/packages/release/kepler/sr2/eclipse-ide-java-ee-developers		
+
+
+student table
+=============
+drop table student;
+create table student(sno number(3),sname varchar2(10),sadd varchar2(12));
+insert into student values(101,'raja','hyd');
+insert into student values(102,'ravi','delhi');
+insert into student values(103,'ramana','vizag');
+commit;
+
+
+Steps to develop First JDBC Application to select the records from student table
+==================================================================================
+step1:
+-----
+	Launch Eclipse IDE by choosing workspace location.
+
+step2:
+------
+	Create a Java project i.e IH-JAVA-019. 
+	ex:
+	File --> new --> project --> Java project --> Next --> 
+	project Name : IH-JAVA-019 ---> Next --> Finish. 
+
+step3:
+-----
+	Add "ojdbc14.jar" file in project build path.
+	ex:
+		Right click to IH-JAVA-019 --> build path --> configuration 
+		build path --> libraries ---> Add external jars --> select 
+		ojdbc14.jar file --> open --> ok.
+
+step4:
+------
+	Create a "com.ihub.www" package inside "src" folder.
+	ex:
+		Right click to src folder --> new --> package -->
+		Name : com.ihub.www  --> finish. 
+
+step5:
+-----
+	Create a "SelectApp.java" file inside "com.ihub.www" package.
+	ex:
+		Right click to com.ihub.www --> new --> class -->
+		Name : SelectApp --> Finish.
+
+package com.ihub.www;
+
+// ctrl + shift + o 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class SelectApp 
+{
+	public static void main(String[] args)throws Exception 
+	{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","system","admin");
+		Statement st=con.createStatement();
+		ResultSet rs=st.executeQuery("select * from student");
+		while(rs.next())
+		{
+			System.out.println(rs.getInt(1)+" "+rs.getString(2)+" "+rs.getString(3));
+		}
+		rs.close();
+		st.close();
+		con.close();
+	}
+}
+
+step6:
+------
+	Run the jdbc application.
+
+
+
+example2:
+-------
+package com.ihub.www;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+
+public class SelectApp2 {
+
+	public static void main(String[] args)throws Exception  
+	{
+		Class.forName("oracle.jdbc.driver.OracleDriver");
+		Connection con=DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","system","admin");
+		Statement st=con.createStatement();
+		ResultSet rs=st.executeQuery("select sname,sadd from student");
+		while(rs.next())
+		{
+			System.out.println(rs.getString(1)+" "+rs.getString(2));
+		}
+		rs.close();
+		st.close();
+		con.close();
+
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 

@@ -1,0 +1,284 @@
+Spring boot flow layered Architecture
+=====================================
+Diagram: sb4.3
+
+
+Note:
+-----
+	create a schema in mysql database.
+	ex:
+		create schema java19;
+		
+		show databases;
+		
+		use java19;
+
+project structure
+------------------
+customer-service
+|
+|----src/main/java
+|	|
+	|---com.ihub.www(base package)
+		|
+		|---CustomerServiceApplication.java
+
+	|
+	|---com.ihub.www.controller
+		|
+		|---CustomerController.java
+
+	|---com.ihub.www.service
+		|
+		|---CustomerService.java
+	
+	|---com.ihub.www.repo
+		|
+		|----CustomerRepository.java(Interface)
+
+	|---com.ihub.www.model	
+		|
+		|----Customer.java
+
+|-----src/main/resources
+|		|
+		|---application.yml
+|
+|----pom.xml
+
+
+step1:
+------
+Create a spring starter project i.e customer-service.
+ex:
+	staters:  spring web 
+		  spring data jpa 
+		  mysql driver
+		  lombok
+
+step2:
+------
+Create Customer model class inside "com.ihub.www.model" package
+ex:
+package com.ihub.www.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Customer 
+{
+	@Id
+	private int custId;
+	
+	@Column
+	private String custName;
+	
+	@Column
+	private String custAdd;
+}
+
+
+step3:
+------
+Create CustomerRepository interface inside "com.ihub.www.repo" package
+
+ex:
+
+package com.ihub.www.repo;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.ihub.www.model.Customer;
+
+@Repository
+public interface CustomerRepository extends JpaRepository<Customer, Integer>
+{
+
+}
+
+step4:
+------
+Create a "CustomerController" inside "com.ihub.www.controller" package.
+ex:
+package com.ihub.www.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ihub.www.model.Customer;
+import com.ihub.www.service.CustomerService;
+
+@RestController
+@RequestMapping("/customer")
+public class CustomerController 
+{
+
+	@Autowired
+	CustomerService customerService;
+	
+	@PostMapping("/add")
+	public Customer addCustomer(@RequestBody Customer customer)
+	{
+		return customerService.addCustomer(customer);
+	}
+	
+	@GetMapping("/fetch")
+	public List<Customer> getAllCustomer()
+	{
+		return customerService.getAllCustomer();
+	}
+	
+	@GetMapping("/fetch/{custId}")
+	public Customer getCustomer(@PathVariable int custId)
+	{
+		return customerService.getCustomer(custId);
+	}
+	
+	
+	@PutMapping("/edit")
+	public String updateCustomer(@RequestBody Customer customer)
+	{
+		return customerService.updateCustomer(customer);
+	}
+	
+	@DeleteMapping("/delete/{custId}")
+	public String deleteCustomer(@PathVariable int custId)
+	{
+		return customerService.deleteCustomer(custId);
+	}
+}
+
+
+step5:
+----
+Create a "CustomerService" inside "com.ihub.www.service" package.
+ex:
+package com.ihub.www.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import com.ihub.www.model.Customer;
+import com.ihub.www.repo.CustomerRepository;
+
+@Service
+public class CustomerService 
+{
+	@Autowired 
+	CustomerRepository customerRepository;
+	
+	public Customer addCustomer(Customer customer)
+	{
+		return customerRepository.save(customer);
+	}
+	public List<Customer> getAllCustomer()
+	{
+		return customerRepository.findAll();
+	}
+	
+	public Customer getCustomer(int custId)
+	{
+		return customerRepository.findById(custId).get();
+	}
+	
+	public String updateCustomer(Customer customer)
+	{
+	Customer cust=customerRepository.findById(customer.getCustId()).get();
+			
+	cust.setCustName(customer.getCustName());
+			
+	cust.setCustAdd(customer.getCustAdd());
+			
+	customerRepository.save(cust);
+			
+	return "Record is updated";
+	}
+	
+	public String deleteCustomer(int custId)
+	{
+		customerRepository.deleteById(custId);
+		return "Record is deleted";
+	}
+}
+
+step6:
+------
+Configure msql driver  and server port inside application.yml.
+ex:
+application.yml file
+--------------------
+server:
+  port: 9191
+  
+
+spring:
+  application:
+    name: CUSTOMER-SERVICE
+    
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/demo17
+    username: root
+    password: root
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+
+
+
+step7:
+------
+	Test the applications by using below rest api's.
+
+
+REST API				HTTP Method 
+---------				-------
+http://localhost:9191/customer/add	POST
+
+{
+
+    "custId": 101,
+    "custName": "Lisa",
+    "custAdd":"Chicago"    
+}
+
+
+
+http://localhost:9191/customer/fetch 	GET 
+
+http://localhost:9191/customer/fetch/101GET 
+
+http://localhost:9191/customer/edit	PUT
+
+{
+
+    "custId": 102,
+    "custName": "Linda",
+    "custAdd":"Vegas"    
+}
+
+http://localhost:9191/customer/delete/102 DELETE

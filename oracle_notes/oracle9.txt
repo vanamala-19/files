@@ -1,0 +1,317 @@
+5)Inner join
+==============
+It is similar to equi join.
+
+Inner join is given by ANSI.
+
+ANSI stands for American National Standards Institute.
+
+ex:
+	
+	select e.eid,e.ename,e.esal,d.dname,d.dloc from emp e INNER JOIN dept d
+	ON(e.deptno=d.deptno); // 6 records 
+
+
+	select e.eid,e.ename,e.esal,d.dname,d.dloc from emp e JOIN dept d
+	ON(e.deptno=d.deptno);
+
+
+6)Outer Join
+===========
+It is a extension of equi join.
+
+It will return matching as well as not matching records.
+
+A '+' denoted as outer join operator.
+
+We have following types of outer joins.
+
+i)Left Outer join
+------------------
+	SQL
+	----
+		select e.eid,e.ename,e.esal,d.dname,d.dloc from 
+		emp e,dept d where(e.deptno=d.deptno(+));	
+	ANSI
+	----
+		select e.eid,e.ename,e.esal,d.dname,d.dloc from 
+		emp e LEFT OUTER JOIN dept d ON(e.deptno=d.deptno);	
+
+ii)Right Outer join
+--------------------
+	SQL
+	----
+		select e.eid,e.ename,e.esal,d.dname,d.dloc from 
+		emp e,dept d where(e.deptno(+)=d.deptno);	
+	ANSI
+	----
+		select e.eid,e.ename,e.esal,d.dname,d.dloc from 
+		emp e RIGHT OUTER JOIN dept d ON(e.deptno=d.deptno);
+
+iii)Full Outer join 
+-------------------
+	ANSI 
+	-----
+		select e.eid,e.ename,e.esal,d.dname,d.dloc from 
+		emp e FULL OUTER JOIN dept d ON(e.deptno=d.deptno);
+
+Views
+=======
+View is a logical representation or virtual representation of a data from one or more then one table.
+
+A table which is used to create a view is called based table or above table.
+
+syntax:
+-----
+	create view <view_name> as select stmt;
+
+ex:
+	create view v1 as select * from emp;	
+
+View does not consume any memory.
+
+View does not contains any data.
+
+Whenever we write select statement then view will get the data from above table or base table.
+
+We have different types of views.
+
+1)Simple view 
+
+2)Complex view 
+
+3)With ready only view 
+
+4)With check option view 
+
+5) Materialized view 
+
+1)Simple view 
+-------------
+If a view is created by using one base table is called simple view.
+
+ex:
+	create view v1 as select * from emp;
+	create view v1 as select eid,ename,esal from emp;
+	create view v1 as select * from where deptno=10;
+	create view v1 as select * from where job<>='Manager';
+	create view v1 as select * from emp where eid IN(201,202,203);
+	create view v1 as select * from emp where ename like 'A%';
+	create view v1 as select * from emp where esal between 5000 AND 50000;
+
+DML operations are allowed in simple view.
+
+ex:
+	delete from v1; 
+	select * from v1; //no rows selected
+	select * from emp; // no rows selected
+	rollback;
+
+2)Complex view 
+------------------
+If a view is created by using more then one base table is called complex view.
+
+ex:
+	create view  v2 as select e.eid,e.ename,e.esal,d.dname,d.dloc from emp e,
+	dept d where(e.deptno=d.deptno);
+
+	select * from v2; // 6 records 
+
+DML operations are not allowed in complex view.
+
+	delete from v2;  //cannot delete from view
+ 
+
+3)With ready only view 
+----------------------
+If we want to create a view by using one base table and DML operations are not allowed then we need to use with ready only view.
+
+ex:
+	create view v3 as select * from emp with read only;	 
+
+
+	select * from v3; // 6 records display 
+
+	delete from v3; // cannot delete from view
+
+4)With check option view 
+-------------------------
+If we want to create a view by using one base table and DML operation is allowed only if condition is satisfied then we need to use with check option value.
+ex:
+	create view v4 as select * from emp where deptno=10 with check option;
+
+	insert into v4 values(208,'Chan',20000,60,'Salesman',200); 
+						//view WITH CHECK OPTION
+
+	insert into v4 values(208,'Chan',20000,10,'Salesman',200); 
+
+	select * from v4;
+
+	select * from v4;
+
+5) Materialized view 
+----------------------
+To create a materialized view a table must have primary key or unique key.
+
+Materialized view is also known as snapshot.
+
+ex:
+	alter table emp add primary key(eid);
+
+	create materialized view v5 as select * from emp;
+
+	select * from v5;
+	
+	delete from emp where eid in (207,208);
+	commit;
+	
+	select * from v5;
+
+To get the changes in materialized view , we need to referesh the view.
+ex:
+	exec DBMS_SNAPSHOT.REFRESH('v5');
+
+
+Q)Write a query to see the list of views present in database?
+
+	select view_name from user_views;
+
+
+Q)Write a query to drop the view ?
+
+	drop view v1;
+	drop view v2;
+	drop view v3;
+	drop view v4;
+	drop materialized view v5;
+
+Sub Queries
+=============
+We will declare a query inside another query such concept is called sub query.
+
+Sub queries are used to retrive the records based on unknown values.
+
+ex:
+
+Normal query :
+---------
+	select * from emp where eid=201;
+
+sub query :
+-----------
+	select * from emp where eid=(select eid from emp where ename='Alan');
+
+Here first inner query will be executed then outer query.
+
+Sub queries can be nested upto 32 levels.
+
+Sub queries are different types.
+
+1) Single row sub query
+
+2) Multiple row sub query 
+
+3) Multiple column sub query
+
+1) Single row sub query
+--------------------------
+If a sub query returns only one row is called single row sub query.
+
+ex:
+	select * from emp where eid=(select eid from emp where ename='Alan');
+
+
+Q)Write a query to display second highest salary from emp table?
+
+	select max(esal) from emp where esal<(select max(esal) from emp);
+
+
+Q)Write a query to display employees information whose salary is greater then Lisa salary?
+
+	select * from emp where esal>(select esal from emp where ename='Lisa');
+
+2) Multiple row sub query
+---------------------------
+When subquery returns more then one row is called multiple row sub query.
+
+To perform multiple row sub query we need to use multiple row operators.
+
+We have three multiple row operators.
+
+1)ALL
+
+2)ANY
+
+3)IN 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+

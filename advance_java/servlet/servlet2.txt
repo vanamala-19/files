@@ -1,0 +1,341 @@
+Servlets API
+=============
+API is a collection of packages.
+
+ex:
+	javax.servlet.*;
+	javax.servlet.http.*;
+
+
+Important terminologies
+=======================
+javax.servlet.Servlet(I)
+	|
+	|
+javax.servlet.GenericServlet(AC)
+	|
+	|
+javax.servlet.http.HttpServlet(C)
+
+
+Eclipse IDE
+============
+IDE		:	JEE IDE 
+
+Environment	:	Java Environment 
+
+Flavours	:	Kepler, Indigo, Mars, Luna and etc.
+
+Organization	:	Eclipse Foundation 
+
+Open source	:	Open source 
+
+File Format	:	Zip file
+
+Download link	:	
+
+https://www.eclipse.org/downloads/packages/release/kepler/sr2/eclipse-ide-java-ee-developers
+
+
+Extract the Eclipse IDE software
+---------------------------------
+Right click to eclipse IDE --> extract files --> select 'E' drive ---> ok.
+
+
+First Web application development having Servlet program as web resource program
+=================================================================================
+Diagram: servlet2.1
+
+Deployment Directory structure
+------------------------------
+DateApp
+|
+|---Java Resources
+|	|
+	|------src
+		|
+		|----com.ihub.www
+			|
+			|------DateSrv.java
+|
+|---Web Content 
+	|
+	|------WEB-INF
+		|
+		|----web.xml 
+
+Note:
+------
+In above application we need to add "servlet-api.jar" file in project build path.
+
+
+step1:
+-----
+	Launch eclipse IDE by choosing workspace location.	
+
+step2:
+------
+	Create a dynamic web project i.e DateApp.
+	ex:
+		File --> new --> dynamic web project --> 
+		
+		project Name : DateApp 
+		Dynamic web module version : 3.0  --> next --> next -->
+		
+		select generate web.xml file(checkbox) --> finish.
+		
+
+step3:
+------
+	Add "servlet-api.jar" in project build path.
+	ex:
+		right click to DateApp project --> build path --> configuration 
+		built path --> libraries --> Add external jars --> select 
+		servlet-api.jar file --> open -->ok .
+
+step4:
+------
+	Create a "com.ihub.www" package inside "src" folder.
+	ex:
+		Right click to src folder --> new --> package -->
+		Name : com.ihub.www --> finish.
+
+step5:
+-----
+	Create a "DateSrv.java" file inside "com.ihub.www" package.
+	ex:
+		right click to com.ihub.www pkg --> new --> class -->
+		Name : DateSrv --> finish.	
+
+DateSrv.java
+------------
+package com.ihub.www;
+
+//ctrl+shift+o
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Date;
+
+import javax.servlet.GenericServlet;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
+public class DateSrv extends GenericServlet 
+{
+	public void service(ServletRequest req,ServletResponse res)throws ServletException,IOException
+	{
+		PrintWriter pw=res.getWriter();
+		res.setContentType("text/html");
+		
+		Date d=new Date();
+		pw.println("<center><h1>Current Date And Time <br>"+d+" </h1></center>");
+		
+		
+		pw.close();
+	}
+}
+
+step6:
+-----
+	Configure each servlet program in web.xml file.
+
+web.xml
+------
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  
+  <servlet>
+  		<servlet-name>DateSrv</servlet-name>
+  		<servlet-class>com.ihub.www.DateSrv</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+ 		<servlet-name>DateSrv</servlet-name>
+ 		<url-pattern>/test</url-pattern>
+  </servlet-mapping>
+  
+  
+</web-app>
+
+
+step7:
+------
+	Add "Tomcat" server to eclipse IDE.
+	ex:
+		Window --> Preferences --> servers --> runtime Environments
+		--> click to Add button --> select Apache --> Apache Tomcat 7
+		---> Next --> select Tomcat installation directory --> finish
+		--> ok. 
+
+step8:
+-----
+	Run the dynamic project i.e DateApp.
+	ex:
+		Right click to DateApp --> run as --> run on server -->
+		select apache tomcat 7 --> finish.
+
+step9:
+------
+	Test the application by using below request url.
+	ex:
+						url pattern 
+						|
+		http://localhost:2525/DateApp/test 
+			|         |     |
+		 hostname    portno  webapplication 
+
+Note:
+-----
+If there is a problem with web.xml file then we will get 404 Error.
+
+If there is a problem with servlet program then we will get 500 Error.
+
+
+
+Types of url patterns
+=====================
+Every servlet program will recognized with the help of URL pattern only.
+
+URL pattern will hide servlet name and technology name from the outsider for security reason.
+
+Our servlet container, client , other web resource programs will recognized servlet program with url pattern.
+
+We have three types of url patterns.
+
+1)Exact Match url pattern
+
+2)Directory Match url pattern
+
+3)Extension Match url pattern
+
+Every server is designed to support these three types of url patterns.
+
+1)Exact Match url pattern
+---------------------------
+It will starts with '/' forward slash followed by a name.
+
+ex:
+	web.xml
+	-------
+		<url-pattern>/test</url-pattern>
+
+	Request url
+	-----------
+		http://localhost:2525/DateApp/test  (valid) 
+		http://localhost:2525/DateApp/best  (invalid) 
+		http://localhost:2525/DateApp/a/test  (invalid) 
+
+
+2)Directory Match url pattern
+----------------------------
+It will starts with '/' forward slash and ends with '*' symbol.
+
+ex:
+	web.xml
+	-------
+		<url-pattern>/x/y/*</url-pattern>
+
+	Request url
+	-----------
+		http://localhost:2525/DateApp/test  (invalid) 
+		http://localhost:2525/DateApp/x/y/z  (valid) 
+		http://localhost:2525/DateApp/x/y/z/test  (valid) 
+		http://localhost:2525/DateApp/y/x/z  (invalid) 
+
+3)Extension Match url pattern
+----------------------------
+It will starts with '*' symbol followed by a extension.	
+
+ex:
+	web.xml
+	-------
+		<url-pattern>*.do</url-pattern>
+
+	Request url
+	-----------
+		http://localhost:2525/DateApp/test  (invalid) 
+		http://localhost:2525/DateApp/test.do (valid) 
+		http://localhost:2525/DateApp/x/y/z/test  (invalid) 
+		http://localhost:2525/DateApp/y/x/z.do  (valid) 
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
